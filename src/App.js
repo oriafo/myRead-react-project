@@ -18,7 +18,9 @@ class BooksApp extends React.Component {
 
     query:"",                             //holds the inputed queries
     books:[],                             //hold all the books gotten with the getAll Api
-    //shelf:[],
+    currentlyReading:[],
+    wantToRead:[],
+    read:[],
     searchedBook:[],                      //hold all the books gotten baswed on the  search queries
     showSearchPage: false,
   }
@@ -29,21 +31,39 @@ class BooksApp extends React.Component {
         books
       }))
     })
+    this.state.books.map(book => {
+    console.log("i got here")
+      if(book.shelf === "currentlyReading")
+      {
+        this.setState({currentlyReading:this.state.currentlyReading.push()})
+      }
+      else if (book.shelf === "wantToRead") {
+        this.setState({wantToRead:this.state.wantToRead.push()})
+      }
+      else 
+      this.setState({read:this.state.read.push()})
+    });
   }
+
 
   renderSearchPage =  (showSearchPage) => {
     this.setState({showSearchPage: showSearchPage,});
-    if (showSearchPage == false){
+    if (showSearchPage === false){
     this.setState({searchedBook:[]})
     }
   }
 
   updateQuery = (query) => {
-   this.setState({
-     query,
-    searchedBook: this.state.books.filter(
-      book => book.title === query
-    )});
+    this.setState(() => ({
+      query:query.trim()
+    }))
+    console.log(query)
+    BooksAPI.search(query).then((searchedBook) => {
+      this.setState({
+       searchedBook: this.state.books.filter(
+         book => book.title === query
+       )});
+    })
   }
   
   render() {
@@ -55,7 +75,7 @@ class BooksApp extends React.Component {
           <div className="list-books">
             <Header />
             <Categories />
-            <SearchButton showSearchPage={this.renderSearchPage}/>
+            <SearchButton showSearchPage={this.renderSearchPage} />
           </div>
         )}
       </div>
