@@ -9,7 +9,7 @@ class SearchField extends React.Component{
         return(
             <div className="search-books">
               <div className="search-books-bar">
-                <button className="close-search" onClick={() => this.props.showSearchPage(false)}>Close</button>
+                <button className="close-search" onClick={() => this.props.showSearchPage()}>Close</button>
                 <div className="search-books-input-wrapper">
                   <input type="text" placeholder="Search by title or author" 
                   value={this.props.query}
@@ -23,12 +23,12 @@ class SearchField extends React.Component{
                 <ol className="books-grid">
                   
                   {searchedBook.map(book => (
-                    <li>
+                    <li key={book.id}>
                       <div className="book">
                         <div className="book-top">
                           <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `URL(${book.imageLinks.thumbnail})`}}></div>
                           <div className="book-shelf-changer">
-                            <select>
+                            <select value={book.shelf} onChange={(event) => this.props.shelfFromSearch(book, event.target.value)}>
                               <option value="move" disabled>Move to...</option>
                               <option value="currentlyReading">Currently Reading</option>
                               <option value="wantToRead">Want to Read</option>

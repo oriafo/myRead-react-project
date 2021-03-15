@@ -1,4 +1,5 @@
 import React from 'react'
+//import {BrowserRouter} from 'react-router-dom'
 import * as BooksAPI from './BooksAPI'
 import Categories from './component/categories'
 import Header from './component/header'
@@ -18,41 +19,32 @@ class BooksApp extends React.Component {
 
     query:"",                             //holds the inputed queries
     books:[],                             //hold all the books gotten with the getAll Api
-    currentlyReading:[],
-    wantToRead:[],
-    read:[],
     searchedBook:[],                      //hold all the books gotten baswed on the  search queries
     showSearchPage: false,
   }
 
+  //calls the getAll book API
   componentDidMount(){
+    this.updateBooks()
+  }
+
+  updateBooks = () => {
     BooksAPI.getAll().then((books) => {
       this.setState(() => ({
         books
       }))
     })
-    this.state.books.map(book => {
-    console.log("i got here")
-      if(book.shelf === "currentlyReading")
-      {
-        this.setState({currentlyReading:this.state.currentlyReading.push()})
-      }
-      else if (book.shelf === "wantToRead") {
-        this.setState({wantToRead:this.state.wantToRead.push()})
-      }
-      else 
-      this.setState({read:this.state.read.push()})
-    });
   }
 
-
-  renderSearchPage =  (showSearchPage) => {
-    this.setState({showSearchPage: showSearchPage,});
-    if (showSearchPage === false){
-    this.setState({searchedBook:[]})
-    }
+  //Renders the search page
+  renderSearchPage =  () => {
+    this.setState({showSearchPage: !this.state.showSearchPage,});
+    // if (this.state.showSearchPage == false){
+    //   this.setState({searchedBook:''})
+    // }
   }
 
+  //update the search state and also calls the search API
   updateQuery = (query) => {
     this.setState(() => ({
       query:query.trim()
@@ -60,21 +52,30 @@ class BooksApp extends React.Component {
     console.log(query)
     BooksAPI.search(query).then((searchedBook) => {
       this.setState({
-       searchedBook: this.state.books.filter(
-         book => book.title === query
-       )});
+       searchedBook
+    });
     })
+    if(query.length <= 0){
+      this.setState({searchedBook:''})
+    }
   }
   
+  moveToShelf = (book, shelf) => {
+    console.log("pleasessss:", this.shelf)
+    BooksAPI.update(book, shelf).then(() => 
+    this.updateBooks()
+    )
+  }
+
   render() {
     return (
       <div className="app">
         {this.state.showSearchPage ? (
-          <SearchField showSearchPage={this.renderSearchPage}  queryProps={this.updateQuery} books={this.state.books} searchedBook={this.state.searchedBook}/>
+          <SearchField showSearchPage={this.renderSearchPage}  queryProps={this.updateQuery} books={this.state.books} searchedBook={this.state.searchedBook} shelfFromSearch={this.moveToShelf}/>
         ) : (
           <div className="list-books">
             <Header />
-            <Categories />
+            <Categories books={this.state.books} orderBook={this.moveToShelf}/>
             <SearchButton showSearchPage={this.renderSearchPage} />
           </div>
         )}
