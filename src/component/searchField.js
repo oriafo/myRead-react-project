@@ -1,5 +1,5 @@
 import React from 'react'
-import BooksApp from '../App'
+import { Route } from 'react-router-dom'
 
 class SearchField extends React.Component{
     render(){   
@@ -8,7 +8,7 @@ class SearchField extends React.Component{
       const searchedBook = this.props.searchedBook
         return(
             <div className="search-books">
-              <div className="search-books-bar">
+                <div className="search-books-bar">
                 <button className="close-search" onClick={() => this.props.showSearchPage()}>Close</button>
                 <div className="search-books-input-wrapper">
                   <input type="text" placeholder="Search by title or author" 
@@ -17,6 +17,7 @@ class SearchField extends React.Component{
                   />
                 </div>
               </div>
+              
 
 
               <div className="search-books-results">

@@ -5,6 +5,7 @@ import Categories from './component/categories'
 import Header from './component/header'
 import SearchButton from './component/searchButton'
 import SearchField from './component/searchField'
+import { Route } from 'react-router-dom'
 import './App.css'
 
 class BooksApp extends React.Component {
@@ -17,17 +18,23 @@ class BooksApp extends React.Component {
      * pages, as well as provide a good URL they can bookmark and share.
      */
 
-    query:"",                             //holds the inputed queries
-    books:[],                             //hold all the books gotten with the getAll Api
-    searchedBook:[],                      //hold all the books gotten baswed on the  search queries
+    query:"",                             //Holds the inputed queries
+    books:[],                             //Hold all the books gotten with the getAll Api
+    searchedBook:[],                      //Hhold all the books gotten baswed on the  search queries
     showSearchPage: false,
   }
 
-  //calls the getAll book API
+
+  /*Calls the getAll book API imediatly after the App.js component is rendered to the Dom so that
+   we can have access to the current available books on our shelf and we are calling the methods 
+   where the getAll book API is implemented because of reuseability.*/
   componentDidMount(){
     this.updateBooks()
   }
 
+
+/*This is the methods that calls the actual getAll book API. this was done because we want to be 
+able to call the API anytime(reuseability) by other methods not only by componentDidMount method */
   updateBooks = () => {
     BooksAPI.getAll().then((books) => {
       this.setState(() => ({
@@ -50,11 +57,14 @@ class BooksApp extends React.Component {
       query:query.trim()
     }))
     console.log(query)
-    BooksAPI.search(query).then((searchedBook) => {
+    if (query.length > 0){
+    console.log(query.length)
+      BooksAPI.search(query).then((searchedBook) => {
       this.setState({
        searchedBook
     });
     })
+    }
     if(query.length <= 0){
       this.setState({searchedBook:''})
     }
@@ -70,15 +80,18 @@ class BooksApp extends React.Component {
   render() {
     return (
       <div className="app">
-        {this.state.showSearchPage ? (
-          <SearchField showSearchPage={this.renderSearchPage}  queryProps={this.updateQuery} books={this.state.books} searchedBook={this.state.searchedBook} shelfFromSearch={this.moveToShelf}/>
-        ) : (
-          <div className="list-books">
-            <Header />
-            <Categories books={this.state.books} orderBook={this.moveToShelf}/>
-            <SearchButton showSearchPage={this.renderSearchPage} />
-          </div>
-        )}
+        <Route exact path='/' render={() =>(
+          this.state.showSearchPage ? (
+            <SearchField showSearchPage={this.renderSearchPage}  queryProps={this.updateQuery} books={this.state.books} searchedBook={this.state.searchedBook} shelfFromSearch={this.moveToShelf}/>
+          ) : (
+            <div className="list-books">
+              <Header />
+              <Categories books={this.state.books} orderBook={this.moveToShelf}/>
+              <SearchButton showSearchPage={this.renderSearchPage} />
+            </div>
+          )
+        )}/> 
+        
       </div>
     )
   }
