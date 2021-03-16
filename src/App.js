@@ -47,22 +47,30 @@ able to call the API anytime(reuseability) by other methods not only by componen
     
   }
 
-  //This method update the "search" state and also calls the search API
+ //This method update the "search" state and also calls the search API
   updateQuery = (query) => {
     this.setState(() => ({
       query:query.trim()
     }))
     if (query.length > 0){
       BooksAPI.search(query).then((searchedBook) => {
-      this.setState({
+        console.log("query:",searchedBook)
+        if (searchedBook.error){
+           this.setState({
+        searchedBook:[]
+    })
+        }else{
+           this.setState({
         searchedBook
     });
+        }
     })
     }
     if(query.length <= 0){
       this.setState({searchedBook:[]})
     }
   }
+  
   
   //This method uses the Update API call to update the shelf the book belongs to
   moveToShelf = (book, shelf) => {
