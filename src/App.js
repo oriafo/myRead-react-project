@@ -12,7 +12,10 @@ class BooksApp extends React.Component {
   state = {
     query:'',                             //Holds the inputed queries
     books:[],                             //Hold all the books gotten with the getAll Api
-    searchedBook:[],                      //Hhold all the books gotten baswed on the  search queries
+    searchedBook:[],                      //Hold all the books gotten based on the  search queries
+    currentlyReading:[],                  //Hold all the books in the shelf 'currentlyReading'
+    wantToRead:[],                        //Hold all the books in the shelf 'wantToRead'
+    read:[],                              //Hold all the books in the shelf 'read'
     showSearchPage: false,
   }
 
