@@ -25,6 +25,7 @@ class SearchField extends React.Component{
               <div className="search-books-results">
                 <ol className="books-grid">
                   {searchedBook.map(book => (
+                     (book.imageLinks) ?
                     <li key={book.id}>
                       <div className="book">
                         <div className="book-top">
@@ -42,8 +43,8 @@ class SearchField extends React.Component{
                         <div className="book-title">{book.title}</div>
                         <div className="book-authors">{book.authors}</div>
                       </div>
-                    </li>
-                  ))}
+                    </li> :null
+                  ))}  
                 </ol>  
               </div>
             </div>
