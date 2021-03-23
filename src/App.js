@@ -4,7 +4,7 @@ import Categories from './component/categories'
 import Header from './component/header'
 import SearchButton from './component/searchButton'
 import SearchField from './component/searchField'
-import { Route, Link } from 'react-router-dom'
+import { Route } from 'react-router-dom'
 import './App.css'
 
 class BooksApp extends React.Component {
@@ -13,9 +13,10 @@ class BooksApp extends React.Component {
     query:'',                             //Holds the inputed queries
     books:[],                             //Hold all the books gotten with the getAll Api
     searchedBook:[],                      //Hold all the books gotten based on the  search queries
-    currentlyReading:[],                  //Hold all the books in the shelf 'currentlyReading'
-    wantToRead:[],                        //Hold all the books in the shelf 'wantToRead'
-    read:[],                              //Hold all the books in the shelf 'read'
+    // currentlyReading:[],                  //Hold all the books in the shelf 'currentlyReading'
+    // wantToRead:[],                        //Hold all the books in the shelf 'wantToRead'
+    // read:[],                              //Hold all the books in the shelf 'read'
+    unsortedResult:[],
     showSearchPage: false,
   }
 
@@ -37,13 +38,14 @@ able to call the API anytime(reuseability) by other methods not only by componen
       }))
     })
   }
+  
 
   //Renders the search page based on the current state of "showSearchPage" state
   renderSearchPage =  () => {
     this.setState(() => ({
       showSearchPage: !this.state.showSearchPage,
     }))
-    if( this.state.showSearchPage == true){
+    if( this.state.showSearchPage === true){
       this.setState({searchedBook:[]})
     }
     //this.setState({showSearchPage: !this.state.showSearchPage,});
@@ -57,23 +59,50 @@ able to call the API anytime(reuseability) by other methods not only by componen
     }))
     if (query.length > 0){
       BooksAPI.search(query).then((searchedBook) => {
-        console.log("query:",searchedBook)
         if (searchedBook.error){
-           this.setState({
-        searchedBook:[]
-    })
+           this.setState(() => ({
+            showSearchPage: !this.state.showSearchPage,
+          }))
         }else{
-           this.setState({
-        searchedBook
-    });
+          this.setState({
+            //unsortedResult:searchedBook
+            searchedBook
+          })
+        
         }
     })
     }
+    //this.sorting()
     if(query.length <= 0){
-      this.setState({searchedBook:[]})
+      this.setState({unsortedResult:[]})
     }
   }
   
+//this method does the magic of making the right shelf of the books show during searching.
+  sorting(){
+    //we need to check the shelf state of both unsortedResult and searchedBook
+    // this.state.unsortedResult.forEach((u, i) => {
+    //   if(u.title === )
+    //   this.state.books.forEach((b, i) => {
+    //     if(value !== dataTwoSession[i]) {
+    //       isAllValueMatched = false;
+    //     }
+    //   });
+    // })
+    for (let i=0; i<=this.state.unsortedResult.length; i++){
+      console.log("here is unsorted:", this.state.unsortedResult.length)
+      for (let j=0; j<=this.state.books.length; j++){
+          if(this.state.unsortedResult[i].title === this.state.books[j].title){
+            this.stateunsortedResult[i].shelf = this.state.books[j].shelf
+            this.setState({
+              searchedBook:this.state.unsortedResult[i]
+          })
+          }else{
+            this.state.unsortedResult[i].shelf = "wantToRead"
+          }
+      }
+    }
+  }
   
   //This method uses the Update API call to update the shelf the book belongs to
   moveToShelf = (book, shelf) => {
@@ -95,7 +124,7 @@ able to call the API anytime(reuseability) by other methods not only by componen
 
          <div>
       <Route exact path='/search' render={() =>(
-        <SearchField showSearchPage={this.renderSearchPage}  queryProps={this.updateQuery} books={this.state.books} searchedBook={this.state.searchedBook} shelfFromSearch={this.moveToShelf} />
+        <SearchField showSearchPage={this.renderSearchPage}  queryProps={this.updateQuery} books={this.state.books} searchedBook={this.state.searchedBook} shelfFromSearch={this.moveToShelf} unsortedResult={this.state.unsortedResult}/>
       )}/> 
       </div>
       </div>
